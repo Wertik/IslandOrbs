@@ -38,5 +38,6 @@ public class OrbsLanguage extends LanguageDefaults {
         addDefault("Placeholders.No-Island", "no_island");
         addDefault("Placeholders.Invalid-Params", "invalid_params");
         addDefault("Placeholders.Not-Placed", "not_placed");
+        addDefault("Placeholders.Member-Line", "&8 - &7%nick% (&f%balance%&7)");
     }
 }

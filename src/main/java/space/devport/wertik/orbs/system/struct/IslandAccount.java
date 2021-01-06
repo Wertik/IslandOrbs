@@ -6,10 +6,7 @@ import lombok.extern.java.Log;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.wertik.orbs.system.json.IslandAccountJsonAdapter;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log
@@ -87,6 +84,10 @@ public class IslandAccount implements Account {
     @Override
     public double getBalance() {
         return balance;
+    }
+
+    public Set<PlayerAccount> getPlayerAccounts() {
+        return Collections.unmodifiableSet(playerAccounts);
     }
 
     @Override

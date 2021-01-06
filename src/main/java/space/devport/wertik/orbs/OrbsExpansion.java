@@ -6,6 +6,7 @@ import lombok.Getter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.orbs.system.struct.IslandAccount;
@@ -49,10 +50,11 @@ public class OrbsExpansion extends PlaceholderExpansion {
     }
 
     /*
-     * %islandorbs_top_<position>_<leader/island/amount>%
+     * %islandorbs_top_<position>_<leader/island/balance>%
      * %islandorbs_position%
      * %islandorbs_balance%
      * %islandorbs_islandbalance%
+     * %islandorbs_members%
      * */
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
@@ -101,8 +103,27 @@ public class OrbsExpansion extends PlaceholderExpansion {
                     if (island == null)
                         return language.get("Placeholders.No-Island").color().toString();
                     return island.getOwner().getName();
+                } else if (arr[2].equalsIgnoreCase("members")) {
+                    return parseMembers(account);
                 }
+            case "members":
+                islandAccount = plugin.getAccountManager().getIslandAccounts().get(a -> a.hasAccount(player.getUniqueId()));
+                if (!islandAccount.isPresent())
+                    return language.get("Placeholders.No-Island").color().toString();
+                return parseMembers(islandAccount.get());
         }
         return language.get("Placeholders.Invalid-Params").color().toString();
+    }
+
+    private String parseMembers(IslandAccount islandAccount) {
+        StringBuilder str = new StringBuilder();
+        String lineFormat = language.get("Placeholders.Member-Line").toString();
+
+        islandAccount.getPlayerAccounts().forEach(a -> str.append(lineFormat
+                .replaceAll("(?i)%nick%", a.getNickname())
+                .replaceAll("(?i)%balance%", plugin.format(a.getBalance())))
+                .append("\n"));
+
+        return StringUtil.color(str.toString());
     }
 }
