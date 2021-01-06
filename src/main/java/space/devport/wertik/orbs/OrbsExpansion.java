@@ -12,6 +12,7 @@ import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.orbs.system.struct.IslandAccount;
 import space.devport.wertik.orbs.system.struct.PlayerAccount;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 public class OrbsExpansion extends PlaceholderExpansion {
@@ -119,10 +120,12 @@ public class OrbsExpansion extends PlaceholderExpansion {
         StringBuilder str = new StringBuilder();
         String lineFormat = language.get("Placeholders.Member-Line").toString();
 
-        islandAccount.getPlayerAccounts().forEach(a -> str.append(lineFormat
-                .replaceAll("(?i)%nick%", a.getNickname())
-                .replaceAll("(?i)%balance%", plugin.format(a.getBalance())))
-                .append("\n"));
+        islandAccount.getPlayerAccounts().stream()
+                .sorted(Comparator.comparingDouble(PlayerAccount::getBalance))
+                .forEach(a -> str.append(lineFormat
+                        .replaceAll("(?i)%nick%", a.getNickname())
+                        .replaceAll("(?i)%balance%", plugin.format(a.getBalance())))
+                        .append("\n"));
 
         return StringUtil.color(str.toString());
     }

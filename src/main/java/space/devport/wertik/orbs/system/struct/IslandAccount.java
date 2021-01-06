@@ -43,16 +43,18 @@ public class IslandAccount implements Account {
     }
 
     public void removeAccount(UUID uniqueID) {
-        removeAccount(new PlayerAccount(uniqueID));
-    }
+        boolean res = this.playerAccounts.removeIf(a -> {
+            if (a.getUniqueID().equals(uniqueID)) {
+                a.setParent(null);
+                return true;
+            }
+            return false;
+        });
 
-    public void removeAccount(PlayerAccount account) {
-        if (!this.playerAccounts.remove(account))
-            return;
+        if (!res) return;
 
-        account.setParent(null);
         updateBalance();
-        log.log(DebugLevel.DEBUG, "Removed player " + account.getUniqueID().toString() + " from " + islandUUID.toString() + "; Updated balance to " + getBalance());
+        log.log(DebugLevel.DEBUG, "Removed player " + uniqueID.toString() + " from " + islandUUID.toString() + "; Updated balance to " + getBalance());
     }
 
     public boolean hasAccount(UUID uniqueID) {
@@ -71,14 +73,6 @@ public class IslandAccount implements Account {
         return this.playerAccounts.stream()
                 .map(PlayerAccount::getUniqueID)
                 .collect(Collectors.toSet());
-    }
-
-    private synchronized double addBalance(double value) {
-        return this.balance += value;
-    }
-
-    private synchronized double subtractBalance(double value) {
-        return this.balance -= value;
     }
 
     @Override

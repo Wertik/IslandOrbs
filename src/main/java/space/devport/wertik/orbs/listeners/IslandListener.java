@@ -1,9 +1,6 @@
 package space.devport.wertik.orbs.listeners;
 
-import com.bgsoftware.superiorskyblock.api.events.IslandCreateEvent;
-import com.bgsoftware.superiorskyblock.api.events.IslandDisbandEvent;
-import com.bgsoftware.superiorskyblock.api.events.IslandJoinEvent;
-import com.bgsoftware.superiorskyblock.api.events.IslandQuitEvent;
+import com.bgsoftware.superiorskyblock.api.events.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import space.devport.wertik.orbs.OrbsPlugin;
@@ -20,11 +17,7 @@ public class IslandListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    public void onIslandQuit(IslandQuitEvent event) {
-        UUID islandUUID = event.getIsland().getUniqueId();
-        UUID playerUUID = event.getPlayer().getUniqueId();
-
+    private void handleLeave(UUID islandUUID, UUID playerUUID) {
         IslandAccount islandAccount = plugin.getAccountManager().getIslandAccounts().get(islandUUID);
 
         if (islandAccount == null)
@@ -38,13 +31,34 @@ public class IslandListener implements Listener {
     }
 
     @EventHandler
-    public void onIslandJoin(IslandJoinEvent event) {
-        UUID islandUUID = event.getIsland().getUniqueId();
-        UUID playerUUID = event.getPlayer().getUniqueId();
+    public void onIslandQuit(IslandQuitEvent event) {
+        handleLeave(event.getIsland().getUniqueId(), event.getPlayer().getUniqueId());
+    }
 
+    @EventHandler
+    public void onIslandKick(IslandKickEvent event) {
+        handleLeave(event.getIsland().getUniqueId(), event.getTarget().getUniqueId());
+    }
+
+    @EventHandler
+    public void onUnCoop(IslandUncoopPlayerEvent event) {
+        handleLeave(event.getIsland().getUniqueId(), event.getTarget().getUniqueId());
+    }
+
+    private void handleJoin(UUID islandUUID, UUID playerUUID) {
         // Add player to island account
         PlayerAccount playerAccount = plugin.getAccountManager().getPlayerAccounts().getOrCreate(playerUUID);
         plugin.getAccountManager().getIslandAccount(islandUUID).addAccount(playerAccount);
+    }
+
+    @EventHandler
+    public void onIslandJoin(IslandJoinEvent event) {
+        handleJoin(event.getIsland().getUniqueId(), event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onIslandCoop(IslandCoopPlayerEvent event) {
+        handleJoin(event.getIsland().getUniqueId(), event.getTarget().getUniqueId());
     }
 
     @EventHandler
@@ -59,11 +73,10 @@ public class IslandListener implements Listener {
     public void onIslandCreate(IslandCreateEvent event) {
         UUID islandUUID = event.getIsland().getUniqueId();
 
-        IslandAccount islandAccount = plugin.getAccountManager().getIslandAccounts().create(islandUUID);
+        plugin.getAccountManager().getIslandAccounts().create(islandUUID);
 
         // Add leader to island account
         UUID leaderUUID = event.getIsland().getOwner().getUniqueId();
-        PlayerAccount playerAccount = plugin.getAccountManager().getPlayerAccounts().getOrCreate(leaderUUID);
-        islandAccount.addAccount(playerAccount);
+        handleJoin(islandUUID, leaderUUID);
     }
 }
