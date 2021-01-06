@@ -1,0 +1,11 @@
+name: @name@
+main: @main_class@
+version: @version@
+authors: [ qwz ]
+depend: [ SuperiorSkyblock2 ]
+soft-depend: [ PlaceholderAPI ]
+
+commands:
+  islandorbs:
+    description: Main plugin command.
+    aliases: [ orbs, orb, islandorb ]

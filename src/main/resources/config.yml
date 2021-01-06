@@ -1,0 +1,22 @@
+# Configuration for @name@
+#
+# Version: @version@
+
+plugin-prefix: '&bIsland Orbs &8| '
+debug-enabled: false
+
+# Default balance every player starts with.
+default-balance: 0
+
+# Wipe player's balance when he quits an island?
+wipe-on-island-quit: false
+
+# PlaceholderAPI identifier.
+placeholder-identifier: 'islandorbs'
+
+# Displayed number format.
+number-format: '#.#'
+
+top-cache:
+  # Top cache refresh in seconds.
+  refresh: 10
