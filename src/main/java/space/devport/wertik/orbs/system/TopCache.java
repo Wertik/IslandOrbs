@@ -44,7 +44,7 @@ public class TopCache {
 
     private void update() {
         List<IslandAccount> accounts = plugin.getAccountManager().getIslandAccounts().getValues();
-        accounts.sort(Comparator.comparingDouble(Account::getBalance));
+        accounts.sort(Comparator.comparingDouble(Account::getBalance).reversed());
 
         cache.clear();
         cache.addAll(accounts);

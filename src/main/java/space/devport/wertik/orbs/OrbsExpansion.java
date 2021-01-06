@@ -121,7 +121,7 @@ public class OrbsExpansion extends PlaceholderExpansion {
         String lineFormat = language.get("Placeholders.Member-Line").toString();
 
         islandAccount.getPlayerAccounts().stream()
-                .sorted(Comparator.comparingDouble(PlayerAccount::getBalance))
+                .sorted(Comparator.comparingDouble(PlayerAccount::getBalance).reversed())
                 .forEach(a -> str.append(lineFormat
                         .replaceAll("(?i)%nick%", a.getNickname())
                         .replaceAll("(?i)%balance%", plugin.format(a.getBalance())))
