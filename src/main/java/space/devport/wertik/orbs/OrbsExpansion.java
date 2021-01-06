@@ -29,6 +29,11 @@ public class OrbsExpansion extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean persist() {
+        return true;
+    }
+
+    @Override
     public @NotNull String getIdentifier() {
         return placeholderIdentifier;
     }

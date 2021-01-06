@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.orbs.commands.OrbCommand;
 import space.devport.wertik.orbs.listeners.IslandListener;
@@ -22,6 +23,7 @@ public class OrbsPlugin extends DevportPlugin {
     @Getter
     private AccountManager accountManager;
 
+    @Getter
     private OrbsExpansion expansion;
 
     @Getter
@@ -29,7 +31,6 @@ public class OrbsPlugin extends DevportPlugin {
 
     @Override
     public void onPluginEnable() {
-
         loadOptions();
 
         this.accountManager = new AccountManager(this);
@@ -62,6 +63,8 @@ public class OrbsPlugin extends DevportPlugin {
     public void onReload() {
         accountManager.getTopCache().start();
         loadOptions();
+
+        registerExpansion();
     }
 
     @Override
@@ -86,7 +89,11 @@ public class OrbsPlugin extends DevportPlugin {
         }
     }
 
-    private void registerExpansion() {
+    public void registerExpansion() {
+
+        if (!DependencyUtil.isEnabled("PlaceholderAPI"))
+            return;
+
         if (expansion != null)
             unregisterExpansion();
 
