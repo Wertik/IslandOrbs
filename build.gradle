@@ -9,9 +9,9 @@ plugins {
 archivesBaseName = 'original-Orbs'
 group 'space.devport.wertik.orbs'
 sourceCompatibility = '8'
-version = '1.0.0'
+version = '1.0.1'
 
-def pluginVersion = '1.0.0'
+def pluginVersion = '1.0.1'
 def pluginName = 'Orbs'
 def mainClass = project.property("group") + "." + pluginName + "Plugin"
 
