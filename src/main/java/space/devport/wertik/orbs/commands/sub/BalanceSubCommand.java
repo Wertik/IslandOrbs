@@ -55,7 +55,7 @@ public class BalanceSubCommand extends OrbSubCommand {
 
         Optional<IslandAccount> islandAccount = plugin.getAccountManager().getIslandAccount(target);
 
-        language.getPrefixed(me ? "Commands.Balance.Done" : "Commands.Balance.Done-Me")
+        language.getPrefixed(me ? "Commands.Balance.Done-Me" : "Commands.Balance.Done")
                 .replace("%balance%", plugin.format(playerAccount.get().getBalance()))
                 .replace("%islandBalance%", islandAccount.isPresent() ?
                         plugin.format(islandAccount.get().getBalance()) : language.get("Commands.Balance.None").toString())

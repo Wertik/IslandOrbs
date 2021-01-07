@@ -30,6 +30,11 @@ public class PlayerAccount implements Account {
         this.balance = balance;
     }
 
+    public void delete() {
+        if (parent != null)
+            this.parent.removeAccount(uniqueID);
+    }
+
     private void updateParent() {
         if (parent != null)
             parent.updateBalance();

@@ -25,6 +25,7 @@ public class OrbsLanguage extends LanguageDefaults {
         addDefault("Commands.Set.Done", "&7Set &f%player%&7's balance to &f%balance%");
 
         addDefault("Commands.Reset.Done", "&7Reset &f%player%&7's balance from &f%oldBalance% &7to &f%balance%&7.");
+        addDefault("Commands.Reset.Done-All", "&7Reset &f%count% &7accounts.");
 
         addDefault("Commands.Balance.Done", "&7Balance of &f%player%: &f%balance% &7( island: &e%islandBalance% &7)");
         addDefault("Commands.Balance.Done-Me", "&7Your balance: &f%balance% &7( island: &e%islandBalance% &7)");

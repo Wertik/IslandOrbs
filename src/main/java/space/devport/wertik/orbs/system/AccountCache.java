@@ -9,6 +9,7 @@ import space.devport.wertik.orbs.system.struct.Account;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -75,6 +76,17 @@ public class AccountCache<T extends Account> {
             e.printStackTrace();
             return null;
         });
+    }
+
+    public void forEach(Consumer<T> action) {
+        for (T t : cache.values())
+            action.accept(t);
+    }
+
+    public int empty() {
+        int count = cache.size();
+        cache.clear();
+        return count;
     }
 
     public CompletableFuture<Void> saveToJson(GsonHelper gsonHelper, String path) {

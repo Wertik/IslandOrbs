@@ -9,10 +9,7 @@ import space.devport.wertik.orbs.OrbsPlugin;
 import space.devport.wertik.orbs.system.struct.IslandAccount;
 import space.devport.wertik.orbs.system.struct.PlayerAccount;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Log
 public class AccountManager {
@@ -75,15 +72,18 @@ public class AccountManager {
         return Optional.of(playerAccounts.getOrCreate(uniqueID));
     }
 
-    // Reset player's balance and update island account
-    public boolean resetPlayer(String name) {
+    public int deletePlayers() {
+        playerAccounts.forEach(PlayerAccount::delete);
+        return playerAccounts.empty();
+    }
+
+    // Delete player.
+    public boolean deletePlayer(String name) {
         Optional<PlayerAccount> playerAccount = playerAccounts.get(a -> a.getNickname().equals(name));
 
         if (playerAccount.isPresent()) {
-            UUID uniqueID = playerAccount.get().getUniqueID();
-
-            playerAccount.get().setBalance(plugin.getConfig().getDouble("default-balance", 0));
-            islandAccounts.get(acc -> acc.hasAccount(uniqueID)).ifPresent(IslandAccount::updateBalance);
+            playerAccount.get().delete();
+            playerAccounts.remove(playerAccount.get().getUniqueID());
             return true;
         }
         return false;

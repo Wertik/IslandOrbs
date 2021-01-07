@@ -20,10 +20,20 @@ public class ResetSubCommand extends OrbSubCommand {
 
     public ResetSubCommand(OrbsPlugin plugin) {
         super(plugin, "reset");
+        setAliases("delete", "remove");
     }
 
     @Override
     protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+
+        if (args.length == 0) {
+            int count = plugin.getAccountManager().deletePlayers();
+            language.getPrefixed("Commands.Reset.Done-All")
+                    .replace("%count%", count)
+                    .send(sender);
+            return CommandResult.SUCCESS;
+        }
+
         Optional<PlayerAccount> playerAccount = plugin.getAccountManager().getPlayerAccount(args[0]);
 
         if (!playerAccount.isPresent()) {
@@ -35,7 +45,7 @@ public class ResetSubCommand extends OrbSubCommand {
 
         double oldBalance = playerAccount.get().getBalance();
 
-        if (!plugin.getAccountManager().resetPlayer(args[0])) {
+        if (!plugin.getAccountManager().deletePlayer(args[0])) {
             language.getPrefixed("Commands.Invalid-Player")
                     .replace("%param%", args[0])
                     .send(sender);
@@ -60,16 +70,16 @@ public class ResetSubCommand extends OrbSubCommand {
 
     @Override
     public @Nullable String getDefaultUsage() {
-        return "/%label% reset <player>";
+        return "/%label% reset (player)";
     }
 
     @Override
     public @Nullable String getDefaultDescription() {
-        return "Reset player's balance.";
+        return "Resets balance..";
     }
 
     @Override
     public @Nullable ArgumentRange getRange() {
-        return new ArgumentRange(1);
+        return new ArgumentRange(0, 1);
     }
 }

@@ -33,7 +33,7 @@ public class IslandAccountJsonAdapter implements JsonSerializer<IslandAccount>, 
         OrbsPlugin plugin = OrbsPlugin.getPlugin(OrbsPlugin.class);
 
         for (UUID uuid : uuids) {
-            PlayerAccount playerAccount = plugin.getAccountManager().getPlayerAccounts().get(uuid);
+            PlayerAccount playerAccount = plugin.getAccountManager().getPlayerAccounts().getOrCreate(uuid);
             islandAccount.addAccount(playerAccount, false);
         }
 
