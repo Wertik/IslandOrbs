@@ -12,7 +12,9 @@ import space.devport.wertik.orbs.OrbsPlugin;
 import space.devport.wertik.orbs.system.struct.IslandAccount;
 import space.devport.wertik.orbs.system.struct.PlayerAccount;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Log
 public class AccountManager {
@@ -34,20 +36,7 @@ public class AccountManager {
 
         this.playerAccounts = new AccountCache<>(uniqueID -> new PlayerAccount(uniqueID, plugin.getConfig().getInt("default-balance", 0)));
 
-        this.islandAccounts = new AccountCache<>(islandUUID -> {
-            Island island = SuperiorSkyblockAPI.getGrid().getIsland(islandUUID);
-
-            if (island == null)
-                return null;
-
-            IslandAccount account = new IslandAccount(islandUUID);
-
-            island.getIslandMembers(true).stream()
-                    .map(SuperiorPlayer::getUniqueId)
-                    .forEach(u -> account.addAccount(playerAccounts.getOrCreate(u)));
-
-            return account;
-        });
+        this.islandAccounts = new AccountCache<>(IslandAccount::new);
 
         this.topCache = new TopCache(plugin);
     }
@@ -59,7 +48,9 @@ public class AccountManager {
                         .thenAcceptAsync(count -> {
                             islandAccounts.getValues().forEach(IslandAccount::updateBalance);
                             log.info(String.format("Loaded %d island account(s)...", count));
-                        }));
+                        })
+                        // Update islands
+                        .thenRun(() -> ensureIslands().thenRun(this::updateBalances)));
     }
 
     public void save() {
@@ -121,5 +112,26 @@ public class AccountManager {
             return true;
         }
         return false;
+    }
+
+    public CompletableFuture<Void> updateBalances() {
+        return islandAccounts.forEach(IslandAccount::updateBalance);
+    }
+
+    public CompletableFuture<Integer> ensureIslands() {
+        return CompletableFuture.supplyAsync(() -> {
+            int count = 0;
+            for (Island island : SuperiorSkyblockAPI.getSuperiorSkyblock().getGrid().getIslands()) {
+                UUID islandUUID = island.getUniqueId();
+
+                IslandAccount account = islandAccounts.getOrCreate(islandUUID);
+
+                island.getIslandMembers(true).stream()
+                        .map(SuperiorPlayer::getUniqueId)
+                        .forEach(u -> account.addAccount(playerAccounts.getOrCreate(u)));
+                count++;
+            }
+            return count;
+        });
     }
 }

@@ -88,9 +88,11 @@ public class AccountCache<T extends Account> {
         });
     }
 
-    public void forEach(Consumer<T> action) {
-        for (T t : cache.values())
-            action.accept(t);
+    public CompletableFuture<Void> forEach(Consumer<T> action) {
+        return CompletableFuture.runAsync(() -> {
+            for (T t : cache.values())
+                action.accept(t);
+        });
     }
 
     public int empty() {

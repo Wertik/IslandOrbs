@@ -19,6 +19,7 @@ public class OrbsLanguage extends LanguageDefaults {
         addDefault("Commands.Give.Done", "&7Added &f%amount% &7to &f%player%&7's balance. New balance: &f%balance%");
 
         addDefault("Commands.Update.Done", "&7Update balance for island of &f%player%");
+        addDefault("Commands.Update.Done-All", "&7Updated and ensured island structure for &f%count% &7islands.");
 
         addDefault("Commands.Take.Done", "&7Subtracted &f%amount% &7from &f%player%&7's balance. New Balance: &f%balance%");
 

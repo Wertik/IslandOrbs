@@ -25,6 +25,18 @@ public class UpdateSubCommand extends OrbSubCommand {
 
     @Override
     protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
+
+        if (args.length == 0) {
+            plugin.getAccountManager().ensureIslands().thenAccept(count -> {
+                plugin.getAccountManager().updateBalances().thenRun(() -> {
+                    language.getPrefixed("Commands.Update.Done-All")
+                            .replace("%count%", count)
+                            .send(sender);
+                });
+            });
+            return CommandResult.SUCCESS;
+        }
+
         Optional<IslandAccount> islandAccount = plugin.getAccountManager().getIslandAccount(args[0]);
 
         if (!islandAccount.isPresent()) {
@@ -51,7 +63,7 @@ public class UpdateSubCommand extends OrbSubCommand {
 
     @Override
     public @Nullable String getDefaultUsage() {
-        return "/%label% update <player>";
+        return "/%label% update (player)";
     }
 
     @Override
@@ -61,6 +73,6 @@ public class UpdateSubCommand extends OrbSubCommand {
 
     @Override
     public @Nullable ArgumentRange getRange() {
-        return new ArgumentRange(1);
+        return new ArgumentRange(0, 1);
     }
 }
