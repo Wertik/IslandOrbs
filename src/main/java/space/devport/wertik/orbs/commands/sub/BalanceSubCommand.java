@@ -53,7 +53,7 @@ public class BalanceSubCommand extends OrbSubCommand {
             return CommandResult.FAILURE;
         }
 
-        Optional<IslandAccount> islandAccount = plugin.getAccountManager().getIslandAccount(target);
+        Optional<IslandAccount> islandAccount = plugin.getAccountManager().getOrCreateIslandAccount(playerAccount.get().getUniqueID());
 
         language.getPrefixed(me ? "Commands.Balance.Done-Me" : "Commands.Balance.Done")
                 .replace("%balance%", plugin.format(playerAccount.get().getBalance()))

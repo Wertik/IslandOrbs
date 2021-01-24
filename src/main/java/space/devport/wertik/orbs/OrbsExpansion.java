@@ -73,7 +73,7 @@ public class OrbsExpansion extends PlaceholderExpansion {
                 PlayerAccount playerAccount = plugin.getAccountManager().getPlayerAccounts().getOrCreate(player.getUniqueId());
                 return plugin.format(playerAccount.getBalance());
             case "islandbalance":
-                Optional<IslandAccount> islandAccount = plugin.getAccountManager().getIslandAccounts().get(a -> a.hasAccount(player.getUniqueId()));
+                Optional<IslandAccount> islandAccount = plugin.getAccountManager().getOrCreateIslandAccount(player.getUniqueId());
                 return islandAccount.map(account -> plugin.format(account.getBalance())).orElse(language.get("Placeholders.No-Island").color().toString());
             case "position":
                 int position = plugin.getAccountManager().getTopCache().getPosition(player.getUniqueId());
@@ -108,7 +108,7 @@ public class OrbsExpansion extends PlaceholderExpansion {
                     return parseMembers(account);
                 }
             case "members":
-                islandAccount = plugin.getAccountManager().getIslandAccounts().get(a -> a.hasAccount(player.getUniqueId()));
+                islandAccount = plugin.getAccountManager().getOrCreateIslandAccount(player.getUniqueId());
                 if (!islandAccount.isPresent())
                     return language.get("Placeholders.No-Island").color().toString();
                 return parseMembers(islandAccount.get());

@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Log
 public class AccountCache<T extends Account> {
@@ -39,6 +40,15 @@ public class AccountCache<T extends Account> {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<T> getOrCreate(Predicate<T> condition, Supplier<T> defaultSupplier) {
+        for (T t : cache.values()) {
+            if (condition.test(t)) {
+                return Optional.of(t);
+            }
+        }
+        return Optional.of(defaultSupplier.get());
     }
 
     public boolean has(UUID uniqueID) {

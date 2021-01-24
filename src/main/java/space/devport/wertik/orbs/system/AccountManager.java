@@ -1,5 +1,8 @@
 package space.devport.wertik.orbs.system;
 
+import com.bgsoftware.superiorskyblock.api.SuperiorSkyblockAPI;
+import com.bgsoftware.superiorskyblock.api.island.Island;
+import com.bgsoftware.superiorskyblock.api.wrappers.SuperiorPlayer;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
@@ -19,7 +22,7 @@ public class AccountManager {
     private final GsonHelper gsonHelper = new GsonHelper();
 
     @Getter
-    private final AccountCache<IslandAccount> islandAccounts = new AccountCache<>(IslandAccount::new);
+    private final AccountCache<IslandAccount> islandAccounts;
     @Getter
     private final AccountCache<PlayerAccount> playerAccounts;
 
@@ -28,7 +31,24 @@ public class AccountManager {
 
     public AccountManager(OrbsPlugin plugin) {
         this.plugin = plugin;
-        this.playerAccounts = new AccountCache<>(uuid -> new PlayerAccount(uuid, plugin.getConfig().getDouble("default-balance", 0)));
+
+        this.playerAccounts = new AccountCache<>(uniqueID -> new PlayerAccount(uniqueID, plugin.getConfig().getInt("default-balance", 0)));
+
+        this.islandAccounts = new AccountCache<>(islandUUID -> {
+            Island island = SuperiorSkyblockAPI.getGrid().getIsland(islandUUID);
+
+            if (island == null)
+                return null;
+
+            IslandAccount account = new IslandAccount(islandUUID);
+
+            island.getIslandMembers(true).stream()
+                    .map(SuperiorPlayer::getUniqueId)
+                    .forEach(u -> account.addAccount(playerAccounts.getOrCreate(u)));
+
+            return account;
+        });
+
         this.topCache = new TopCache(plugin);
     }
 
@@ -50,8 +70,8 @@ public class AccountManager {
                 .thenRun(() -> log.info(String.format("Saved %d player account(s)...", playerAccounts.size())));
     }
 
-    public IslandAccount getIslandAccount(UUID leaderUUID) {
-        return islandAccounts.getOrCreate(leaderUUID);
+    public IslandAccount getIslandAccount(UUID islandUUID) {
+        return islandAccounts.getOrCreate(islandUUID);
     }
 
     @SuppressWarnings("deprecation")
@@ -70,6 +90,20 @@ public class AccountManager {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(name);
         UUID uniqueID = offlinePlayer.getUniqueId();
         return Optional.of(playerAccounts.getOrCreate(uniqueID));
+    }
+
+    public Optional<IslandAccount> getOrCreateIslandAccount(UUID playerUUID) {
+        return plugin.getAccountManager().getIslandAccounts().getOrCreate(a -> a.hasAccount(playerUUID),
+                () -> {
+                    Island island = SuperiorSkyblockAPI.getPlayer(playerUUID).getIsland();
+
+                    if (island == null)
+                        return null;
+
+                    IslandAccount account = new IslandAccount(island.getUniqueId());
+                    account.addAccount(plugin.getAccountManager().getPlayerAccounts().getOrCreate(playerUUID));
+                    return account;
+                });
     }
 
     public int deletePlayers() {
