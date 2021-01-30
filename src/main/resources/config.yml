@@ -17,6 +17,11 @@ placeholder-identifier: 'islandorbs'
 # Displayed number format.
 number-format: '#.#'
 
+# Auto save settings.
+auto-save:
+  enabled: true
+  interval: 300
+
 top-cache:
   # Top cache refresh in seconds.
   refresh: 10

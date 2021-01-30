@@ -44,6 +44,8 @@ public class OrbsPlugin extends DevportPlugin {
 
         accountManager.getTopCache().start();
 
+        accountManager.startAutoSave();
+
         registerExpansion();
     }
 
@@ -53,6 +55,8 @@ public class OrbsPlugin extends DevportPlugin {
 
     @Override
     public void onPluginDisable() {
+        accountManager.stopAutoSave();
+
         accountManager.getTopCache().stop();
         accountManager.save();
 
@@ -63,6 +67,8 @@ public class OrbsPlugin extends DevportPlugin {
     public void onReload() {
         accountManager.getTopCache().start();
         loadOptions();
+
+        accountManager.startAutoSave();
 
         registerExpansion();
     }

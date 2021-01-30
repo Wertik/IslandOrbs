@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import space.devport.utils.utility.ThreadUtil;
 import space.devport.utils.utility.json.GsonHelper;
 import space.devport.wertik.orbs.OrbsPlugin;
 import space.devport.wertik.orbs.system.struct.IslandAccount;
@@ -31,6 +32,8 @@ public class AccountManager {
     @Getter
     private final TopCache topCache;
 
+    private Thread saveTask;
+
     public AccountManager(OrbsPlugin plugin) {
         this.plugin = plugin;
 
@@ -39,6 +42,24 @@ public class AccountManager {
         this.islandAccounts = new AccountCache<>(IslandAccount::new);
 
         this.topCache = new TopCache(plugin);
+    }
+
+    public void stopAutoSave() {
+        if (saveTask == null)
+            return;
+
+        saveTask.interrupt();
+        this.saveTask = null;
+    }
+
+    public void startAutoSave() {
+        stopAutoSave();
+
+        if (!plugin.getConfig().getBoolean("auto-save.enabled", false))
+            return;
+
+        this.saveTask = ThreadUtil.createRepeatingTask(this::save, plugin.getConfig().getInt("auto-save.interval", 300) * 1000L);
+        saveTask.start();
     }
 
     public void load() {
