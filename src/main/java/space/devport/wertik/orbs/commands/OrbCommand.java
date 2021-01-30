@@ -18,6 +18,7 @@ public class OrbCommand extends MainCommand {
 
         withSubCommand(new BuildableSubCommand(plugin, "reload")
                 .withDefaultDescription("Reloads the plugin.")
+                .withRange(0)
                 .withExecutor((sender, label, args) -> {
                     plugin.reload(sender);
                     return CommandResult.SUCCESS;

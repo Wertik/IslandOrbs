@@ -56,10 +56,11 @@ public class IslandListener implements Listener {
         handleJoin(event.getIsland().getUniqueId(), event.getPlayer().getUniqueId());
     }
 
+    /* Requested to be removed. Add an option later maybe.
     @EventHandler
     public void onIslandCoop(IslandCoopPlayerEvent event) {
         handleJoin(event.getIsland().getUniqueId(), event.getTarget().getUniqueId());
-    }
+    }*/
 
     @EventHandler
     public void onIslandDisband(IslandDisbandEvent event) {
