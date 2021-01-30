@@ -27,13 +27,11 @@ public class UpdateSubCommand extends OrbSubCommand {
     protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         if (args.length == 0) {
-            plugin.getAccountManager().ensureIslands().thenAccept(count -> {
-                plugin.getAccountManager().updateBalances().thenRun(() -> {
-                    language.getPrefixed("Commands.Update.Done-All")
-                            .replace("%count%", count)
-                            .send(sender);
-                });
-            });
+            plugin.getAccountManager().ensureIslands().thenAccept(count ->
+                    plugin.getAccountManager().updateBalances().thenRun(() ->
+                            language.getPrefixed("Commands.Update.Done-All")
+                                    .replace("%count%", count)
+                                    .send(sender)));
             return CommandResult.SUCCESS;
         }
 

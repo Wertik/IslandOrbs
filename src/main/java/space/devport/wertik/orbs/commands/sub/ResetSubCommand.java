@@ -27,7 +27,7 @@ public class ResetSubCommand extends OrbSubCommand {
     protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         if (args.length == 0) {
-            int count = plugin.getAccountManager().deletePlayers();
+            int count = plugin.getAccountManager().resetPlayers();
             language.getPrefixed("Commands.Reset.Done-All")
                     .replace("%count%", count)
                     .send(sender);
@@ -45,7 +45,7 @@ public class ResetSubCommand extends OrbSubCommand {
 
         double oldBalance = playerAccount.get().getBalance();
 
-        if (!plugin.getAccountManager().deletePlayer(args[0])) {
+        if (!plugin.getAccountManager().resetPlayer(args[0])) {
             language.getPrefixed("Commands.Invalid-Player")
                     .replace("%param%", args[0])
                     .send(sender);

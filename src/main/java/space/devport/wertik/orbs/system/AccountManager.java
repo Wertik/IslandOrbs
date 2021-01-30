@@ -66,10 +66,7 @@ public class AccountManager {
         playerAccounts.loadFromJson(gsonHelper, plugin.getDataFolder() + "/player-accounts.json", PlayerAccount.class)
                 .thenAcceptAsync(count -> log.info(String.format("Loaded %d player account(s)...", count)))
                 .thenRun(() -> islandAccounts.loadFromJson(gsonHelper, plugin.getDataFolder() + "/island-accounts.json", IslandAccount.class)
-                        .thenAcceptAsync(count -> {
-                            islandAccounts.getValues().forEach(IslandAccount::updateBalance);
-                            log.info(String.format("Loaded %d island account(s)...", count));
-                        })
+                        .thenAcceptAsync(count -> log.info(String.format("Loaded %d island account(s)...", count)))
                         // Update islands
                         .thenRun(() -> ensureIslands().thenRun(this::updateBalances)));
     }
@@ -118,18 +115,18 @@ public class AccountManager {
                 });
     }
 
-    public int deletePlayers() {
-        playerAccounts.forEach(PlayerAccount::delete);
-        return playerAccounts.empty();
+    // Reset all balances.
+    public int resetPlayers() {
+        playerAccounts.forEach(account -> account.setBalance(plugin.getConfig().getInt("default-balance", 0)));
+        return playerAccounts.size();
     }
 
-    // Delete player.
-    public boolean deletePlayer(String name) {
+    // Reset player balance.
+    public boolean resetPlayer(String name) {
         Optional<PlayerAccount> playerAccount = playerAccounts.get(a -> a.getNickname().equals(name));
 
         if (playerAccount.isPresent()) {
-            playerAccount.get().delete();
-            playerAccounts.remove(playerAccount.get().getUniqueID());
+            playerAccount.get().setBalance(plugin.getConfig().getInt("default-balance", 0));
             return true;
         }
         return false;
@@ -152,6 +149,7 @@ public class AccountManager {
                         .forEach(u -> account.addAccount(playerAccounts.getOrCreate(u)));
                 count++;
             }
+            log.info(String.format("Ensured account structure for %d island(s)...", count));
             return count;
         });
     }
