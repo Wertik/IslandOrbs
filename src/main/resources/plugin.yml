@@ -2,6 +2,7 @@ name: @name@
 main: @main_class@
 version: @version@
 authors: [ qwz ]
+api-version: 1.13
 depend: [ SuperiorSkyblock2 ]
 soft-depend: [ PlaceholderAPI ]
 
